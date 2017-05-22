@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="DevApps" default="buildEar" basedir="." >
+
+	<property name="webModule" value="..\DevAppsWeb"/> 
+	 
+	<property name="baseDir" value="${basedir}"/> 
+	<property name="build" value="${baseDir}/build"/> 
+	<property name="jarDir" value="${baseDir}/build/jar"/> 
+	<property name="warDir" value="${baseDir}/build/war"/> 
+	<property name="earDir" value="${baseDir}/build/ear"/> 
+	<property name="webRootDir" value="${webModule}/WebContent/WEB-INF"/> 
+	<property name="webDir" value="${warDir}/WEB-INF"/> 
+
+	<path id="libClasspath"> <fileset dir="${webRootDir}/lib" includes="**/*.jar" /> </path>
+	
+	<!-- Cleaning the build directory -->
+	
+	<target name="clean">
+		<delete dir="${build}" />
+	</target>
+	
+	<!-- Initializing/Creating the directories -->
+	
+	<target name="init" depends="clean"> 
+		<mkdir dir="${jarDir}/classes"/> 
+		<mkdir dir="${jarDir}/jar"/> 
+		<mkdir dir="${warDir}/META-INF"/> 
+		<mkdir dir="${webDir}/classes"/> 
+		<mkdir dir="${webDir}/lib"/> 
+		<mkdir dir="${earDir}/META-INF"/> 
+	</target>
+	
+	<!-- Compiling and copying the files from EjbModule and WebModiule --> 
+	<target name="compile" depends="init"> 
+		<javac srcdir="${webModule}/src" destdir="${webDir}/classes" includes="**/*.java"> 
+			<classpath refid="libClasspath"/> 
+		</javac> 
+		<copy todir="${webDir}/lib"> 
+			<fileset dir="${webRootDir}/lib" includes="**/*.jar"/> 
+		</copy>
+		<copy todir="${webDir}"> 
+			<fileset dir="${webRootDir}" includes="web.xml"/> 
+		</copy> 
+		<copy todir="${warDir}"> 
+			<fileset dir="${webModule}/WebContent" includes="**/*.html"/> 
+		</copy> 
+		<copy todir="${earDir}/META-INF"> 
+			<fileset dir="${baseDir}/META-INF" includes="**/*.*"/> 
+		</copy> 
+	</target>
+	
+	<!-- Creating Jar File -->
+	<!--  <target name="buildJar" depends="compile"> 
+		<jar jarfile="${earDir}/${ant.project.name}.jar" basedir="${jarDir}"/> 
+		<jar jarfile="${jarDir}/jar/${ant.project.name}.jar" basedir="${jarDir}"/> 
+	</target>  -->
+	
+	<!-- Creating War File --> 
+	<target name="buildWar" depends="compile"> 
+		<!--   <jar jarfile="${earDir}/${ant.project.name}.war" basedir="${warDir}"/> -->
+		<jar jarfile="${earDir}/DevAppsWeb.war" basedir="${warDir}"/> 
+	</target>
+	
+	<!-- Creating Ear File -->
+	<!-- <target name="buildEar" depends="buildJar,buildWar">  -->
+	<target name="buildEar" depends="buildWar"> 
+		<jar jarfile="${build}/${ant.project.name}.ear" basedir="${earDir}"/> 
+	</target>
+	
+</project>
